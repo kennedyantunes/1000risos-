@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand:        #1F9EC6;
+  --brand-dark:   #187fa0;
+  --brand-deeper: #0f6080;
+  --brand-light:  #e8f6fb;
+  --brand-mid:    #b8e4f2;
+  --brand-dim:    rgba(31,158,198,0.10);
+  --bg:           #f2f6f9;
+  --surface:      #ffffff;
+  --surface2:     #f0f5f8;
+  --surface3:     #e5edf3;
+  --border:       #dde6ec;
+  --border2:      #c5d6e3;
+  --text:         #0e2535;
+  --text2:        #4a6478;
+  --text3:        #8aabbd;
+  --confirmado:      #16a34a;
+  --confirmado-dim:  rgba(22,163,74,0.10);
+  --pendente:        #d97706;
+  --pendente-dim:    rgba(217,119,6,0.10);
+  --realizado:       #64748b;
+  --cancelado:       #dc2626;
+  --cancelado-dim:   rgba(220,38,38,0.08);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); }
+body { overflow: hidden; }
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* Status pill colors */
+.pill-pre        { background: var(--brand-dim);              color: #0f6080; }
+.pill-confirmado { background: var(--confirmado-dim);         color: #14532d; }
+.pill-pendente   { background: var(--pendente-dim);           color: #78350f; }
+.pill-realizado  { background: rgba(100,116,139,0.10);        color: #334155; }
+.pill-cancelado  { background: var(--cancelado-dim);          color: #7f1d1d; }
+
+.dot-pre        { background: var(--brand); }
+.dot-confirmado { background: var(--confirmado); }
+.dot-pendente   { background: var(--pendente); }
+.dot-realizado  { background: var(--realizado); }
+.dot-cancelado  { background: var(--cancelado); }
+
+/* card border-left accent */
+.card-pre::before        { background: var(--brand); }
+.card-confirmado::before { background: var(--confirmado); }
+.card-pendente::before   { background: var(--pendente); }
+.card-realizado::before  { background: var(--realizado); }
+.card-cancelado::before  { background: var(--cancelado); }
