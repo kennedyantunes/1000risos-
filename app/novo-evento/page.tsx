@@ -29,10 +29,134 @@ const STEPS = [
   { name: "Revisão", desc: "Confirmar e salvar" },
 ];
 
+// Pacotes RISO atualizados
 const PKG = [
-  { tag: "Básico", name: "Essencial", desc: "Mesa de frios, refrigerantes, bolo e equipe mínima", price: 4800 },
-  { tag: "✦ Popular", name: "Premium Infantil", desc: "Mesa frios + salgados + doces + bebidas + equipe completa", price: 7200, pop: true },
-  { tag: "◆ Premium", name: "Luxo Completo", desc: "Tudo do Premium + buffet quente + garçons + decoração", price: 11400 },
+  { 
+    tag: "★ ROSA", 
+    name: "Pacote Riso-Rosa", 
+    desc: "Serve: 50–60 pessoas. Ideal para festas menores e intimistas.",
+    items: [
+      "1000 salgadinhos",
+      "100 mini churros",
+      "100 mini cachorros-quentes",
+      "100 mini pizzas",
+      "100 mini pães de queijo",
+      "150 mini pastéis",
+      "6 kg de batata frita no cone",
+      "Pipoca à vontade",
+      "1 fritadeira com operador",
+      "1 copeira",
+      "3 garçons",
+      "1 cama elástica com monitor"
+    ],
+    price: 2900,
+    capacity: "50-60",
+    color: "rose",
+    emoji: "🌸"
+  },
+  { 
+    tag: "★ AMARELO", 
+    name: "Pacote Riso-Amarelo", 
+    desc: "Serve: 80–100 pessoas. Pacote completo com fritadeira e cama elástica.",
+    items: [
+      "1300 salgadinhos",
+      "150 mini churros",
+      "100 mini cachorros-quentes",
+      "100 mini pizzas",
+      "100 mini pães de queijo",
+      "200 mini pastéis",
+      "8 kg de batata frita no cone",
+      "Pipoca à vontade",
+      "1 fritadeira com operador",
+      "1 copeira",
+      "3 garçons",
+      "1 cama elástica com monitor"
+    ],
+    price: 3900,
+    capacity: "80-100",
+    color: "amber",
+    emoji: "🟡",
+    pop: true
+  },
+  { 
+    tag: "★ VERMELHO", 
+    name: "Pacote Riso-Vermelho", 
+    desc: "Serve: 50–70 pessoas. Inclui doces, bolo e macarrão empratado.",
+    items: [
+      "1000 salgadinhos",
+      "150 mini churros",
+      "100 mini cachorros-quentes",
+      "100 mini pizzas",
+      "100 mini pães de queijo",
+      "150 mini pastéis",
+      "6 kg de batata frita no cone",
+      "300 doces tradicionais",
+      "5 kg de bolo (copa)",
+      "Empratado de macarrão ao molho bolonhesa",
+      "Pipoca à vontade",
+      "1 fritadeira com operador",
+      "1 copeira",
+      "3 garçons",
+      "1 cama elástica com monitor",
+      "Bebidas não alcoólicas à vontade"
+    ],
+    price: 3800,
+    capacity: "50-70",
+    color: "red",
+    emoji: "🔴"
+  },
+  { 
+    tag: "★ AZUL", 
+    name: "Pacote Riso-Azul", 
+    desc: "Serve: 80–100 pessoas. Pacote premium com doces, bolo, hambúrguer e bebidas.",
+    items: [
+      "1300 salgadinhos",
+      "150 mini churros",
+      "100 mini cachorros-quentes",
+      "100 mini hambúrgueres",
+      "100 mini pizzas",
+      "100 mini pães de queijo",
+      "200 mini pastéis",
+      "8 kg de batata frita no cone",
+      "400 doces tradicionais",
+      "8 kg de bolo (copa)",
+      "Empratado de macarrão ao molho bolonhesa",
+      "Pipoca à vontade",
+      "1 fritadeira com operador",
+      "1 copeira",
+      "4 garçons",
+      "1 cama elástica com monitor",
+      "Bebidas não alcoólicas à vontade"
+    ],
+    price: 5000,
+    capacity: "80-100",
+    color: "blue",
+    emoji: "🔵"
+  },
+  { 
+    tag: "★ VERDE", 
+    name: "Pacote Riso-Verde", 
+    desc: "Serve: 150 pessoas. O maior pacote para grandes eventos.",
+    items: [
+      "1800 salgadinhos",
+      "200 mini churros",
+      "200 mini cachorros-quentes",
+      "150 mini hambúrgueres",
+      "150 mini pizzas",
+      "200 mini pães de queijo",
+      "250 mini pastéis",
+      "10 kg de batata frita no cone",
+      "Pipoca à vontade",
+      "1 fritadeira com operador",
+      "1 copeira",
+      "4 garçons",
+      "1 cama elástica com monitor"
+    ],
+    price: 4900,
+    capacity: "150",
+    color: "green",
+    emoji: "🟢"
+  },
 ];
 
 const EXTRAS = [
@@ -41,24 +165,41 @@ const EXTRAS = [
   { icon: "🎤", name: "Animador / DJ", desc: "Profissional por até 5h", price: 1500 },
   { icon: "📸", name: "Cabine de fotos", desc: "3h de uso, fotos impressas na hora", price: 950 },
   { icon: "🎂", name: "Bolo personalizado", desc: "Bolo 4 andares com tema", price: 680 },
+  { icon: "🍔", name: "Mini hambúrguer extra", desc: "50 unidades", price: 450 },
+  { icon: "🍫", name: "Mesa de doces extra", desc: "+200 doces tradicionais", price: 600 },
+  { icon: "🥤", name: "Bebidas extras", desc: "Refrigerante, suco e água por mais 2h", price: 800 },
 ];
 
 export default function NovoEventoPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [selPkg, setSelPkg] = useState(1);
-  const [extras, setExtras] = useState<boolean[]>([true, true, false, false, false]);
-  const [guests, setGuests] = useState(120);
+  const [selPkg, setSelPkg] = useState(0); // Começa com o primeiro pacote
+  const [extras, setExtras] = useState<boolean[]>(new Array(EXTRAS.length).fill(false));
+  const [guests, setGuests] = useState(80);
   const [clientSelected, setClientSelected] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const [ddOpen, setDdOpen] = useState(false);
   const [payOpts, setPayOpts] = useState([true, true, false]);
+  const [expandedPkg, setExpandedPkg] = useState<number | null>(0); // Para expandir detalhes do pacote
 
   const pct = [20, 40, 60, 80, 100][step - 1];
 
-  const basePrice = PKG[selPkg].price;
+  const selectedPackage = PKG[selPkg];
+  const basePrice = selectedPackage.price;
   const extrasTotal = extras.reduce((sum, on, i) => sum + (on ? EXTRAS[i].price : 0), 0);
   const total = basePrice + extrasTotal;
+
+  // Cores baseadas no pacote selecionado
+  const getPkgColors = (color: string) => {
+    const colors: Record<string, { bg: string, border: string, text: string, light: string }> = {
+      rose: { bg: "bg-rose-500", border: "border-rose-500", text: "text-rose-700", light: "bg-rose-50" },
+      amber: { bg: "bg-amber-500", border: "border-amber-500", text: "text-amber-700", light: "bg-amber-50" },
+      red: { bg: "bg-red-500", border: "border-red-500", text: "text-red-700", light: "bg-red-50" },
+      blue: { bg: "bg-blue-500", border: "border-blue-500", text: "text-blue-700", light: "bg-blue-50" },
+      green: { bg: "bg-green-500", border: "border-green-500", text: "text-green-700", light: "bg-green-50" },
+    };
+    return colors[color] || colors.blue;
+  };
 
   // ─── Campos reutilizáveis ────────────────────────────────────────────────
   const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
@@ -279,7 +420,7 @@ export default function NovoEventoPage() {
                   <Plus size={18} />
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">O número de convidados afeta o cálculo dos pacotes</p>
+              <p className="text-xs text-gray-500 mt-2">O número de convidados afeta a escolha do pacote ideal</p>
             </Field>
 
             <div className="mt-6">
@@ -301,48 +442,93 @@ export default function NovoEventoPage() {
           <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-2xl shadow-sm">🍽️</div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Pacotes & Serviços</h2>
-            <p className="text-sm text-gray-600 mt-1">Selecione o pacote base e adicione itens avulsos</p>
+            <p className="text-sm text-gray-600 mt-1">Selecione o pacote RISO ideal para seu evento</p>
           </div>
         </div>
 
         <div className="space-y-10">
           <div>
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 pb-2 border-b border-gray-200">
-              Pacote base — {guests} convidados
+              Pacotes RISO — {guests} convidados
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {PKG.map((pkg, i) => (
-                <div
-                  key={i}
-                  onClick={() => setSelPkg(i)}
-                  className={`
-                    relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-200
-                    ${selPkg === i 
-                      ? "border-blue-500 bg-blue-50/40 shadow-md" 
-                      : "border-gray-200 hover:border-blue-300 hover:shadow hover:bg-blue-50/20"}
-                  `}
-                >
-                  {selPkg === i && (
-                    <div className="absolute top-4 right-4 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-sm">
-                      ✓
-                    </div>
-                  )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {PKG.map((pkg, i) => {
+                const colors = getPkgColors(pkg.color);
+                const capacity = pkg.capacity.split('-').map(Number);
+                const isSuitable = guests >= (capacity[0] || 0) && guests <= (capacity[1] || capacity[0] || 999);
+                
+                return (
                   <div
+                    key={i}
+                    onClick={() => setSelPkg(i)}
                     className={`
-                      inline-block px-3 py-1 rounded-full text-xs font-bold mb-4
-                      ${pkg.pop ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-700"}
+                      relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-200
+                      ${selPkg === i 
+                        ? `${colors.light} ${colors.border} shadow-md` 
+                        : "border-gray-200 hover:border-gray-300 hover:shadow hover:bg-gray-50/20"}
+                      ${!isSuitable && "opacity-60"}
                     `}
                   >
-                    {pkg.tag}
+                    {selPkg === i && (
+                      <div className={`absolute top-4 right-4 w-6 h-6 ${colors.bg} text-white rounded-full flex items-center justify-center text-sm font-bold shadow-sm`}>
+                        ✓
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-2xl">{pkg.emoji}</span>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${colors.light} ${colors.text}`}>
+                        {pkg.tag}
+                      </span>
+                    </div>
+                    
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">{pkg.name}</h4>
+                    <p className="text-sm text-gray-600 mb-3">{pkg.desc}</p>
+                    
+                    <div className="mb-3">
+                      <span className="text-xs font-semibold text-gray-500">Capacidade:</span>
+                      <span className="ml-2 text-sm font-medium text-gray-700">{pkg.capacity} pessoas</span>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedPkg(expandedPkg === i ? null : i);
+                      }}
+                      className="text-xs text-blue-600 hover:underline mb-4 inline-block"
+                    >
+                      {expandedPkg === i ? "Ver menos ↑" : "Ver itens do pacote ↓"}
+                    </button>
+
+                    {expandedPkg === i && (
+                      <div className="mb-4 bg-gray-50 p-3 rounded-lg text-xs space-y-1 max-h-40 overflow-y-auto">
+                        {pkg.items.map((item, idx) => (
+                          <div key={idx} className="flex items-start gap-2">
+                            <span className="text-green-600">•</span>
+                            <span className="text-gray-700">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="text-2xl font-bold text-gray-900 font-mono">
+                      R$ {pkg.price.toLocaleString("pt-BR")}
+                    </div>
+                    
+                    {isSuitable && (
+                      <div className="absolute bottom-6 right-6 text-xs text-green-600 font-medium">
+                        ✓ Ideal para {guests} pessoas
+                      </div>
+                    )}
+                    
+                    {!isSuitable && (
+                      <div className="absolute bottom-6 right-6 text-xs text-amber-600 font-medium">
+                        ⚠ Capacidade: {pkg.capacity}
+                      </div>
+                    )}
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">{pkg.name}</h4>
-                  <p className="text-sm text-gray-600 mb-4">{pkg.desc}</p>
-                  <div className="text-2xl font-bold text-blue-700 font-mono">
-                    R$ {pkg.price.toLocaleString("pt-BR")}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">para {guests} pessoas</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -394,7 +580,7 @@ export default function NovoEventoPage() {
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Resumo do pedido</h3>
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-200 text-sm">
-                <span className="text-gray-700">Pacote selecionado ({guests} pax)</span>
+                <span className="text-gray-700">{selectedPackage.name}</span>
                 <span className="font-semibold font-mono">R$ {basePrice.toLocaleString("pt-BR")}</span>
               </div>
 
@@ -465,7 +651,7 @@ export default function NovoEventoPage() {
                   <div className="font-semibold text-amber-800 text-lg">
                     Sinal de 50% — R$ {(total / 2).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </div>
-                  <div className="text-sm text-amber-700 mt-1">Necessário para confirmar como Pré-reservado</div>
+                  <div className="text-sm text-amber-700 mt-1">Necessário para confirmar o evento</div>
                 </div>
                 <div className="text-2xl font-bold text-amber-800 font-mono">
                   R$ {(total / 2 / 1000).toFixed(1)}k
@@ -542,7 +728,7 @@ export default function NovoEventoPage() {
           <div>
             <div className="font-semibold text-green-800 text-lg">Tudo pronto para salvar!</div>
             <div className="text-sm text-green-700 mt-1">
-              O evento será criado com status Pré-reservado e o contrato será gerado automaticamente.
+              O evento será criado com status Pendente e o contrato será gerado automaticamente.
             </div>
           </div>
         </div>
@@ -556,7 +742,7 @@ export default function NovoEventoPage() {
               ["Cliente", "Fernanda Oliveira"],
               ["Contato", "(11) 98765-4321"],
               ["Data", "21 de junho de 2025"],
-              ["Horário", "15:00 – 19:00"],
+              ["Horário", "14:00 – 18:00"],
             ],
           },
           {
@@ -572,10 +758,11 @@ export default function NovoEventoPage() {
           },
           {
             icon: "🍽️",
-            title: "Pacotes & Serviços",
+            title: "Pacote Selecionado",
             step: 3,
             fields: [
-              ["Pacote", `${PKG[selPkg].name} — R$ ${PKG[selPkg].price.toLocaleString("pt-BR")}`],
+              ["Pacote", `${selectedPackage.name} — R$ ${selectedPackage.price.toLocaleString("pt-BR")}`],
+              ["Capacidade", `${selectedPackage.capacity} pessoas`],
               [
                 "Extras",
                 extras
@@ -583,6 +770,7 @@ export default function NovoEventoPage() {
                   .filter(Boolean)
                   .join(", ") || "Nenhum",
               ],
+              ["Total pacote + extras", `R$ ${total.toLocaleString("pt-BR")}`],
             ],
           },
           {
@@ -590,7 +778,7 @@ export default function NovoEventoPage() {
             title: "Financeiro",
             step: 4,
             fields: [
-              ["Total", `R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`],
+              ["Total do evento", `R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`],
               ["Sinal (50%)", `R$ ${(total / 2).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`],
               ["Venc. sinal", "28/05/2025"],
               ["Venc. saldo", "14/06/2025"],
@@ -623,6 +811,25 @@ export default function NovoEventoPage() {
             </div>
           </div>
         ))}
+
+        {/* Resumo do pacote com itens */}
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="font-medium text-gray-700">
+              📋 Itens do {selectedPackage.name}
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {selectedPackage.items.map((item, idx) => (
+                <div key={idx} className="flex items-start gap-2 text-sm">
+                  <span className="text-green-600 mt-0.5">•</span>
+                  <span className="text-gray-700">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     ),
   };

@@ -1,666 +1,776 @@
 "use client";
-
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
+import Link from "next/link";
 import {
+  Search,
   Plus,
-  Edit,
-  Copy,
+  Download,
+  Filter,
   X,
-  DollarSign,
-  SlidersHorizontal,
-  ChevronRight,
+  Calendar,
+  AlertCircle,
   BarChart3,
+  DollarSign,
+  TrendingUp,
+  FileText,
+  Table,
+  Mail,
+  Maximize2,
+  Minimize2,
+  ChevronRight,
+  ChevronLeft,
+  Eye,
+  Edit,
+  MoreHorizontal,
+  User,
+  Briefcase,
+  MapPin,
+  TrendingDown,
+  Wallet,
+  Award,
+  Gift,
+  Star,
+  MessageCircle,
+  Clock,
+  CheckCircle2,
+  Users,
+  Utensils,
+  Package,
+  Copy,
   Trash2,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 
-// ── Tipos (mantidos exatamente iguais) ──
-interface PriceTier {
-  min: number;
-  max: number;
-  pricePerPax: number;
-}
-
+// ── Tipos ──
 interface PackageItem {
   emoji: string;
   name: string;
-  sub: string;
-  qtyPer: string;
-  optional: boolean;
-  costPer100: number;
+  description: string;
+  quantity: string;
 }
 
 interface Package {
   id: string;
   name: string;
-  description: string;
-  badge: string;
-  badgeClass: string;
+  color: string;
   emoji: string;
-  minPax: number;
-  active: boolean;
-  tiers: PriceTier[];
+  price: number;
+  capacity: string;
+  capacityMin: number;
+  capacityMax: number;
+  description: string;
   items: PackageItem[];
+  popular?: boolean;
 }
 
-// ── Mock completo (seu array original) ──
+// ── Pacotes RISO ──
 const packages: Package[] = [
   {
-    id: 'essencial',
-    name: 'Essencial',
-    description: 'Mesa de frios, refrigerantes, bolo simples e equipe mínima. Ideal para festas menores com orçamento controlado.',
-    badge: 'Básico',
-    badgeClass: 'basic',
-    emoji: '📋',
-    minPax: 30,
-    active: true,
-    tiers: [
-      { min: 30, max: 50, pricePerPax: 38 },
-      { min: 51, max: 100, pricePerPax: 34 },
-      { min: 101, max: 300, pricePerPax: 30 },
-    ],
+    id: "amarelo",
+    name: "Riso-Amarelo",
+    color: "amber",
+    emoji: "🟡",
+    price: 3900,
+    capacity: "80–100",
+    capacityMin: 80,
+    capacityMax: 100,
+    description: "Serve: 80–100 pessoas. Pacote completo com fritadeira e cama elástica.",
+    popular: true,
     items: [
-      { emoji: '🥟', name: 'Coxinha de Frango', sub: 'Salgado · Frito', qtyPer: '5 un', optional: false, costPer100: 86.4 },
-      { emoji: '🍫', name: 'Brigadeiro', sub: 'Doce · Tradicional', qtyPer: '3 un', optional: false, costPer100: 27.9 },
-      { emoji: '🥤', name: 'Refrigerante 2L', sub: 'Bebida', qtyPer: '1/8 pax', optional: false, costPer100: 68.0 },
-      { emoji: '👥', name: 'Equipe básica', sub: 'Serviço · Cozinha', qtyPer: '1 equipe', optional: false, costPer100: 500.0 },
+      { emoji: "🍗", name: "Salgadinhos", description: "Assortidos", quantity: "1300 un" },
+      { emoji: "🥨", name: "Mini Churros", description: "Recheados", quantity: "150 un" },
+      { emoji: "🌭", name: "Mini Cachorros-Quentes", description: "Com molho", quantity: "100 un" },
+      { emoji: "🍕", name: "Mini Pizzas", description: "Sabores variados", quantity: "100 un" },
+      { emoji: "🥖", name: "Mini Pães de Queijo", description: "Caseiros", quantity: "100 un" },
+      { emoji: "🥟", name: "Mini Pastéis", description: "Carne e queijo", quantity: "200 un" },
+      { emoji: "🍟", name: "Batata Frita", description: "No cone", quantity: "8 kg" },
+      { emoji: "🍿", name: "Pipoca", description: "À vontade", quantity: "Saindo da cozinha" },
+      { emoji: "🍳", name: "Fritadeira", description: "Com operador", quantity: "1 un" },
+      { emoji: "👩‍🍳", name: "Copeira", description: "Serviço", quantity: "1 un" },
+      { emoji: "👨‍🍳", name: "Garçons", description: "Atendimento", quantity: "3 un" },
+      { emoji: "🏰", name: "Cama Elástica", description: "Com monitor", quantity: "1 un" },
     ],
   },
   {
-    id: 'premium-infantil',
-    name: 'Premium Infantil',
-    description: 'Completo para festas infantis com buffet frio e quente, bebidas, decoração básica e equipe completa. Ideal para 50–200 convidados.',
-    badge: '✦ Popular',
-    badgeClass: 'popular',
-    emoji: '⭐',
-    minPax: 50,
-    active: true,
-    tiers: [
-      { min: 50, max: 80, pricePerPax: 60 },
-      { min: 81, max: 150, pricePerPax: 55 },
-      { min: 151, max: 300, pricePerPax: 50 },
-    ],
+    id: "azul",
+    name: "Riso-Azul",
+    color: "blue",
+    emoji: "🔵",
+    price: 5000,
+    capacity: "80–100",
+    capacityMin: 80,
+    capacityMax: 100,
+    description: "Serve: 80–100 pessoas. Pacote premium com doces, bolo, hambúrguer e bebidas.",
     items: [
-      { emoji: '🥟', name: 'Coxinha de Frango', sub: 'Salgado · Frito', qtyPer: '8 un', optional: false, costPer100: 115.2 },
-      { emoji: '🥧', name: 'Empada de Frango', sub: 'Salgado · Assado', qtyPer: '4 un', optional: false, costPer100: 57.6 },
-      { emoji: '🍫', name: 'Brigadeiro Gourmet', sub: 'Doce · Tradicional', qtyPer: '5 un', optional: false, costPer100: 46.5 },
-      { emoji: '🧁', name: 'Mini Cupcake', sub: 'Doce · Confeitaria', qtyPer: '2 un', optional: true, costPer100: 25.2 },
-      { emoji: '🥤', name: 'Refrigerante 2L', sub: 'Bebida', qtyPer: '1/8 pax', optional: false, costPer100: 68.0 },
-      { emoji: '🧃', name: 'Suco de Fruta 1L', sub: 'Bebida · Natural', qtyPer: '1/10 pax', optional: false, costPer100: 55.0 },
-      { emoji: '🎂', name: 'Bolo Personalizado', sub: 'Doce · Bolo', qtyPer: '1 un', optional: false, costPer100: 354.0 },
-      { emoji: '👥', name: 'Equipe completa', sub: 'Serviço · Garçons + Cozinha', qtyPer: '1 equipe', optional: false, costPer100: 800.0 },
+      { emoji: "🍗", name: "Salgadinhos", description: "Assortidos", quantity: "1300 un" },
+      { emoji: "🥨", name: "Mini Churros", description: "Recheados", quantity: "150 un" },
+      { emoji: "🌭", name: "Mini Cachorros-Quentes", description: "Com molho", quantity: "100 un" },
+      { emoji: "🍔", name: "Mini Hambúrgueres", description: "Saindo da cozinha", quantity: "100 un" },
+      { emoji: "🍕", name: "Mini Pizzas", description: "Sabores variados", quantity: "100 un" },
+      { emoji: "🥖", name: "Mini Pães de Queijo", description: "Caseiros", quantity: "100 un" },
+      { emoji: "🥟", name: "Mini Pastéis", description: "Carne e queijo", quantity: "200 un" },
+      { emoji: "🍟", name: "Batata Frita", description: "No cone", quantity: "8 kg" },
+      { emoji: "🍬", name: "Doces Tradicionais", description: "Assortidos", quantity: "400 un" },
+      { emoji: "🎂", name: "Bolo", description: "Copa", quantity: "8 kg" },
+      { emoji: "🍝", name: "Macarrão", description: "Ao molho bolonhesa", quantity: "Empratado" },
+      { emoji: "🍿", name: "Pipoca", description: "À vontade", quantity: "Saindo da cozinha" },
+      { emoji: "🍳", name: "Fritadeira", description: "Com operador", quantity: "1 un" },
+      { emoji: "👩‍🍳", name: "Copeira", description: "Serviço", quantity: "1 un" },
+      { emoji: "👨‍🍳", name: "Garçons", description: "Atendimento", quantity: "4 un" },
+      { emoji: "🏰", name: "Cama Elástica", description: "Com monitor", quantity: "1 un" },
+      { emoji: "🥤", name: "Bebidas", description: "Não alcoólicas", quantity: "À vontade" },
     ],
   },
   {
-    id: 'luxo-completo',
-    name: 'Luxo Completo',
-    description: 'Tudo do Premium mais buffet quente, garçons individuais, decoração temática inclusa e open bar. Para eventos premium.',
-    badge: '◆ Premium',
-    badgeClass: 'premium',
-    emoji: '◆',
-    minPax: 80,
-    active: true,
-    tiers: [
-      { min: 80, max: 120, pricePerPax: 95 },
-      { min: 121, max: 200, pricePerPax: 88 },
-      { min: 201, max: 400, pricePerPax: 80 },
-    ],
+    id: "rosa",
+    name: "Riso-Rosa",
+    color: "rose",
+    emoji: "🩷",
+    price: 2900,
+    capacity: "50–60",
+    capacityMin: 50,
+    capacityMax: 60,
+    description: "Serve: 50–60 pessoas. Ideal para festas menores e intimistas.",
     items: [
-      { emoji: '🥟', name: 'Coxinha de Frango', sub: 'Salgado · Frito', qtyPer: '10 un', optional: false, costPer100: 144.0 },
-      { emoji: '🥧', name: 'Empada de Frango', sub: 'Salgado · Assado', qtyPer: '6 un', optional: false, costPer100: 86.4 },
-      { emoji: '🍫', name: 'Brigadeiro Gourmet', sub: 'Doce · Tradicional', qtyPer: '8 un', optional: false, costPer100: 74.4 },
-      { emoji: '🧁', name: 'Mini Cupcake', sub: 'Doce · Confeitaria', qtyPer: '4 un', optional: false, costPer100: 50.4 },
-      { emoji: '🍽️', name: 'Buffet quente', sub: 'Refeição completa', qtyPer: '1 pax', optional: false, costPer100: 1200.0 },
-      { emoji: '🥤', name: 'Open Bar', sub: 'Bebidas à vontade', qtyPer: 'ilimitado', optional: false, costPer100: 350.0 },
-      { emoji: '🎈', name: 'Decoração Temática', sub: 'Incluso no pacote', qtyPer: '1 serviço', optional: false, costPer100: 800.0 },
-      { emoji: '👥', name: 'Equipe + Garçons', sub: 'Serviço premium', qtyPer: '1 equipe', optional: false, costPer100: 1200.0 },
+      { emoji: "🍗", name: "Salgadinhos", description: "Assortidos", quantity: "1000 un" },
+      { emoji: "🥨", name: "Mini Churros", description: "Recheados", quantity: "100 un" },
+      { emoji: "🌭", name: "Mini Cachorros-Quentes", description: "Com molho", quantity: "100 un" },
+      { emoji: "🍕", name: "Mini Pizzas", description: "Sabores variados", quantity: "100 un" },
+      { emoji: "🥖", name: "Mini Pães de Queijo", description: "Caseiros", quantity: "100 un" },
+      { emoji: "🥟", name: "Mini Pastéis", description: "Carne e queijo", quantity: "150 un" },
+      { emoji: "🍟", name: "Batata Frita", description: "No cone", quantity: "6 kg" },
+      { emoji: "🍿", name: "Pipoca", description: "À vontade", quantity: "Saindo da cozinha" },
+      { emoji: "🍳", name: "Fritadeira", description: "Com operador", quantity: "1 un" },
+      { emoji: "👩‍🍳", name: "Copeira", description: "Serviço", quantity: "1 un" },
+      { emoji: "👨‍🍳", name: "Garçons", description: "Atendimento", quantity: "3 un" },
+      { emoji: "🏰", name: "Cama Elástica", description: "Com monitor", quantity: "1 un" },
     ],
   },
   {
-    id: 'corporativo',
-    name: 'Corporativo',
-    description: 'Pensado para eventos empresariais com coffee break, almoço ou jantar corporativo, equipe executiva e materiais de apoio.',
-    badge: '🏢 Corporativo',
-    badgeClass: 'corporate',
-    emoji: '🏢',
-    minPax: 50,
-    active: true,
-    tiers: [
-      { min: 50, max: 100, pricePerPax: 75 },
-      { min: 101, max: 200, pricePerPax: 68 },
-      { min: 201, max: 400, pricePerPax: 60 },
-    ],
+    id: "verde",
+    name: "Riso-Verde",
+    color: "green",
+    emoji: "🟢",
+    price: 4900,
+    capacity: "150",
+    capacityMin: 150,
+    capacityMax: 200,
+    description: "Serve: 150 pessoas. O maior pacote para grandes eventos.",
     items: [
-      { emoji: '☕', name: 'Coffee Break', sub: 'Bebidas quentes + frias', qtyPer: '1 pax', optional: false, costPer100: 280.0 },
-      { emoji: '🥗', name: 'Almoço Executivo', sub: 'Buffet completo', qtyPer: '1 pax', optional: false, costPer100: 1400.0 },
-      { emoji: '🥟', name: 'Salgados Finos', sub: 'Sortido · Assado', qtyPer: '6 un', optional: false, costPer100: 130.0 },
-      { emoji: '🥤', name: 'Bebidas', sub: 'Água + Sucos + Refri', qtyPer: '1 pax', optional: false, costPer100: 120.0 },
-      { emoji: '👥', name: 'Equipe Executiva', sub: 'Garçons + Coordenador', qtyPer: '1 equipe', optional: false, costPer100: 950.0 },
+      { emoji: "🍗", name: "Salgadinhos", description: "Assortidos", quantity: "1800 un" },
+      { emoji: "🥨", name: "Mini Churros", description: "Recheados", quantity: "200 un" },
+      { emoji: "🌭", name: "Mini Cachorros-Quentes", description: "Com molho", quantity: "200 un" },
+      { emoji: "🍔", name: "Mini Hambúrgueres", description: "Saindo da cozinha", quantity: "150 un" },
+      { emoji: "🍕", name: "Mini Pizzas", description: "Sabores variados", quantity: "150 un" },
+      { emoji: "🥖", name: "Mini Pães de Queijo", description: "Caseiros", quantity: "200 un" },
+      { emoji: "🥟", name: "Mini Pastéis", description: "Carne e queijo", quantity: "250 un" },
+      { emoji: "🍟", name: "Batata Frita", description: "No cone", quantity: "10 kg" },
+      { emoji: "🍿", name: "Pipoca", description: "À vontade", quantity: "Saindo da cozinha" },
+      { emoji: "🍳", name: "Fritadeira", description: "Com operador", quantity: "1 un" },
+      { emoji: "👩‍🍳", name: "Copeira", description: "Serviço", quantity: "1 un" },
+      { emoji: "👨‍🍳", name: "Garçons", description: "Atendimento", quantity: "4 un" },
+      { emoji: "🏰", name: "Cama Elástica", description: "Com monitor", quantity: "1 un" },
     ],
   },
   {
-    id: 'mini-festa',
-    name: 'Mini Festa',
-    description: 'Pacote descontinuado para festas muito pequenas.',
-    badge: 'Básico',
-    badgeClass: 'basic',
-    emoji: '📦',
-    minPax: 10,
-    active: false,
-    tiers: [
-      { min: 10, max: 30, pricePerPax: 28 },
+    id: "vermelho",
+    name: "Riso-Vermelho",
+    color: "red",
+    emoji: "🔴",
+    price: 3800,
+    capacity: "50–70",
+    capacityMin: 50,
+    capacityMax: 70,
+    description: "Serve: 50–70 pessoas. Inclui doces, bolo e macarrão empratado.",
+    items: [
+      { emoji: "🍗", name: "Salgadinhos", description: "Assortidos", quantity: "1000 un" },
+      { emoji: "🥨", name: "Mini Churros", description: "Recheados", quantity: "150 un" },
+      { emoji: "🌭", name: "Mini Cachorros-Quentes", description: "Com molho", quantity: "100 un" },
+      { emoji: "🍕", name: "Mini Pizzas", description: "Sabores variados", quantity: "100 un" },
+      { emoji: "🥖", name: "Mini Pães de Queijo", description: "Caseiros", quantity: "100 un" },
+      { emoji: "🥟", name: "Mini Pastéis", description: "Carne e queijo", quantity: "150 un" },
+      { emoji: "🍟", name: "Batata Frita", description: "No cone", quantity: "6 kg" },
+      { emoji: "🍬", name: "Doces Tradicionais", description: "Assortidos", quantity: "300 un" },
+      { emoji: "🎂", name: "Bolo", description: "Copa", quantity: "5 kg" },
+      { emoji: "🍝", name: "Macarrão", description: "Ao molho bolonhesa", quantity: "Empratado" },
+      { emoji: "🍿", name: "Pipoca", description: "À vontade", quantity: "Saindo da cozinha" },
+      { emoji: "🍳", name: "Fritadeira", description: "Com operador", quantity: "1 un" },
+      { emoji: "👩‍🍳", name: "Copeira", description: "Serviço", quantity: "1 un" },
+      { emoji: "👨‍🍳", name: "Garçons", description: "Atendimento", quantity: "3 un" },
+      { emoji: "🏰", name: "Cama Elástica", description: "Com monitor", quantity: "1 un" },
+      { emoji: "🥤", name: "Bebidas", description: "Não alcoólicas", quantity: "À vontade" },
     ],
-    items: [],
   },
 ];
 
-// ── Utilitários ──
-function getPricePerPax(pkg: Package, pax: number): number {
-  if (!pkg.tiers?.length) return 0;
-  for (const tier of pkg.tiers) {
-    if (pax >= tier.min && pax <= tier.max) return tier.pricePerPax;
-  }
-  return pkg.tiers[pkg.tiers.length - 1].pricePerPax;
+// ── Componente StatCard ──
+function StatCard({ title, value, sub, color, icon }: { title: string; value: string; sub: string; color: string; icon: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-all duration-200">
+      <div className="flex items-center gap-3 mb-3">
+        <div className={`p-2 rounded-lg ${color} bg-opacity-10`}>
+          {icon}
+        </div>
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">{title}</div>
+      </div>
+      <div className="text-2xl font-bold text-gray-900 mb-1">{value}</div>
+      <div className="text-sm text-gray-600">{sub}</div>
+    </div>
+  );
 }
 
-function fmtBRL(val: number): string {
-  return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+// ── Componente Field ──
+const Field = ({ label, required, children, className }: { label: string; required?: boolean; children: React.ReactNode; className?: string }) => (
+  <div className={`flex flex-col gap-1.5 ${className || ""}`}>
+    <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+      {label}
+      {required && <span className="text-blue-600 ml-1">*</span>}
+    </label>
+    {children}
+  </div>
+);
+
+const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
+  <input
+    {...props}
+    className={`
+      w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm font-medium
+      focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all
+      ${props.className || ""}
+    `}
+  />
+);
+
+// ── Modal Novo/Editar Pacote ──
+function PackageModal({ pkg, onClose }: { pkg: Package | null; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-200">
+        <div className="px-6 pt-6 pb-4 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                {pkg ? `Editar Pacote — ${pkg.name}` : "Novo Pacote"}
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">Configure os detalhes do pacote</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Field label="Nome do pacote" required>
+                <Input defaultValue={pkg?.name} placeholder="Ex: Riso-Amarelo" />
+              </Field>
+              <Field label="Emoji / Ícone">
+                <Input defaultValue={pkg?.emoji} placeholder="Ex: 🟡" />
+              </Field>
+              <Field label="Preço" required>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                  <Input
+                    type="number"
+                    defaultValue={pkg?.price}
+                    className="pl-10 font-mono"
+                    placeholder="0,00"
+                  />
+                </div>
+              </Field>
+              <Field label="Capacidade">
+                <Input defaultValue={pkg?.capacity} placeholder="Ex: 80–100" />
+              </Field>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Mínimo de pessoas">
+                  <Input type="number" defaultValue={pkg?.capacityMin} className="font-mono" />
+                </Field>
+                <Field label="Máximo de pessoas">
+                  <Input type="number" defaultValue={pkg?.capacityMax} className="font-mono" />
+                </Field>
+              </div>
+              <Field label="Cor">
+                <select defaultValue={pkg?.color} className="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm font-medium">
+                  <option value="amber">Amarelo</option>
+                  <option value="blue">Azul</option>
+                  <option value="rose">Rosa</option>
+                  <option value="green">Verde</option>
+                  <option value="red">Vermelho</option>
+                </select>
+              </Field>
+            </div>
+
+            <Field label="Descrição">
+              <textarea
+                defaultValue={pkg?.description}
+                rows={3}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none resize-none"
+                placeholder="Descrição do pacote..."
+              />
+            </Field>
+
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-sm font-semibold text-gray-900">Itens do Pacote</h4>
+                <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1.5">
+                  <Plus size={16} /> Adicionar item
+                </button>
+              </div>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="grid grid-cols-[1fr_1fr_1fr_40px] bg-gray-50 border-b border-gray-200">
+                  <div className="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Item</div>
+                  <div className="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Descrição</div>
+                  <div className="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Quantidade</div>
+                  <div></div>
+                </div>
+                {(pkg?.items || []).map((item, i) => (
+                  <div key={i} className="grid grid-cols-[1fr_1fr_1fr_40px] border-b last:border-b-0">
+                    <div className="px-4 py-3">
+                      <input defaultValue={item.name} className="w-full bg-transparent text-sm" />
+                    </div>
+                    <div className="px-4 py-3">
+                      <input defaultValue={item.description} className="w-full bg-transparent text-sm" />
+                    </div>
+                    <div className="px-4 py-3">
+                      <input defaultValue={item.quantity} className="w-full bg-transparent text-sm font-mono" />
+                    </div>
+                    <div className="px-4 py-3 flex items-center justify-center">
+                      <button className="text-red-500 hover:text-red-700">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center gap-3 justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
+          >
+            Cancelar
+          </button>
+          <button className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-sm">
+            <Save size={16} className="inline mr-2" />
+            Salvar Pacote
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ── Página principal ──
 export default function PacotesPage() {
-  const [selectedId, setSelectedId] = useState("premium-infantil");
-  const [guestCount, setGuestCount] = useState(120);
-  const [eventType, setEventType] = useState("Infantil");
+  const [selectedId, setSelectedId] = useState("amarelo");
+  const [searchTerm, setSearchTerm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalPkg, setModalPkg] = useState<Package | null>(null);
-  const [modalTitle, setModalTitle] = useState("");
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [showDetailsPanel, setShowDetailsPanel] = useState(true);
+  const [expandedItems, setExpandedItems] = useState<string | null>(null);
 
-  const selected = packages.find((p) => p.id === selectedId) ?? packages[0];
-  const pricePerPax = getPricePerPax(selected, guestCount);
-  const total = guestCount * pricePerPax;
-  const margin = Math.round(58 + (pricePerPax - 50) * 0.1);
-  const marginVal = Math.round(total * margin / 100);
+  const selected = packages.find(p => p.id === selectedId) || packages[0];
 
-  const activePkgs = packages.filter((p) => p.active);
-  const inactivePkgs = packages.filter((p) => !p.active);
+  const filteredPackages = packages.filter(p =>
+    searchTerm === "" ||
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const openModal = (title: string, pkg: Package | null = null) => {
-    setModalTitle(title);
-    setModalPkg(pkg);
-    setModalOpen(true);
-  };
+  // Estatísticas
+  const totalPackages = packages.length;
+  const avgPrice = packages.reduce((sum, p) => sum + p.price, 0) / totalPackages;
 
   return (
     <AppShell active="cardapio-pacotes">
       {/* Topbar */}
       <header className="h-14 bg-white border-b border-gray-200 flex items-center px-6 gap-4 flex-shrink-0">
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-500 font-medium">Cardápio</span>
-          <ChevronRight size={14} className="text-gray-400" />
+          <Link href="/cardapio" className="text-gray-500 hover:text-gray-700 font-medium">
+            Cardápio
+          </Link>
+          <span className="text-gray-400">›</span>
           <span className="font-bold text-gray-900">Pacotes</span>
         </div>
 
-        <div className="ml-auto flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-            <SlidersHorizontal size={16} /> Comparar pacotes
+        <div className="ml-auto flex items-center gap-2">
+          {/* Botões de toggle das sidebars */}
+          <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-gray-50">
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className={`p-2 rounded-md transition-all ${showSidebar ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:bg-gray-100"}`}
+              title={showSidebar ? "Ocultar lista" : "Mostrar lista"}
+            >
+              <Filter size={18} />
+            </button>
+            <button
+              onClick={() => setShowDetailsPanel(!showDetailsPanel)}
+              className={`p-2 rounded-md transition-all ${showDetailsPanel ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:bg-gray-100"}`}
+              title={showDetailsPanel ? "Ocultar detalhes" : "Mostrar detalhes"}
+            >
+              <FileText size={18} />
+            </button>
+            <button
+              onClick={() => {
+                if (!showSidebar && !showDetailsPanel) {
+                  setShowSidebar(true);
+                  setShowDetailsPanel(true);
+                } else {
+                  setShowSidebar(false);
+                  setShowDetailsPanel(false);
+                }
+              }}
+              className={`p-2 rounded-md transition-all ${!showSidebar && !showDetailsPanel ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:bg-gray-100"}`}
+              title="Modo foco (ocultar tudo)"
+            >
+              <Maximize2 size={16} />
+            </button>
+          </div>
+
+          <div className="w-px h-6 bg-gray-200 mx-1" />
+
+          <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+            <Download size={16} />
+            <span className="hidden sm:inline">Exportar</span>
           </button>
+          
           <button
-            onClick={() => openModal("Novo Pacote")}
-            className="flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition"
+            onClick={() => {
+              setModalPkg(null);
+              setModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition"
           >
-            <Plus size={16} /> Novo Pacote
+            <Plus size={16} />
+            <span className="hidden sm:inline">Novo Pacote</span>
           </button>
         </div>
       </header>
 
+      {/* Stats Strip - Cards Profissionais */}
+      <div className={`bg-gray-50 border-b border-gray-200 px-6 py-6 transition-all duration-300 ${!showSidebar && !showDetailsPanel ? "hidden" : ""}`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total de Pacotes"
+            value={totalPackages.toString()}
+            sub="ativos"
+            color="bg-blue-600"
+            icon={<Package size={20} className="text-blue-600" />}
+          />
+          <StatCard
+            title="Ticket Médio"
+            value={avgPrice.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            sub="por pacote"
+            color="bg-emerald-600"
+            icon={<DollarSign size={20} className="text-emerald-600" />}
+          />
+          <StatCard
+            title="Menor Valor"
+            value={Math.min(...packages.map(p => p.price)).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            sub="pacote Rosa"
+            color="bg-rose-600"
+            icon={<TrendingDown size={20} className="text-rose-600" />}
+          />
+          <StatCard
+            title="Maior Capacidade"
+            value="150 pax"
+            sub="pacote Verde"
+            color="bg-green-600"
+            icon={<Users size={20} className="text-green-600" />}
+          />
+        </div>
+      </div>
+
+      {/* Barra de pesquisa */}
+      <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 flex-wrap">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="Buscar por nome ou descrição..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar – Lista de Pacotes */}
-        <aside className="w-80 border-r border-gray-200 bg-white flex flex-col">
+        {/* Sidebar - Lista de Pacotes */}
+        <aside className={`border-r border-gray-200 bg-white flex flex-col transition-all duration-300 overflow-hidden ${showSidebar ? "w-80" : "w-0"}`}>
           <div className="p-6 border-b border-gray-200">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-              Pacotes
-            </h3>
-            <p className="text-sm text-gray-600 mt-1">{activePkgs.length} ativos</p>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pacotes</h3>
+            <p className="text-sm text-gray-600 mt-1">{filteredPackages.length} pacotes</p>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-1.5">
-            {activePkgs.map((pkg) => {
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {filteredPackages.map((pkg) => {
               const isSelected = pkg.id === selectedId;
+              const colorClasses = {
+                amber: "border-amber-200 bg-amber-50",
+                blue: "border-blue-200 bg-blue-50",
+                rose: "border-rose-200 bg-rose-50",
+                green: "border-green-200 bg-green-50",
+                red: "border-red-200 bg-red-50",
+              };
+              const bgClass = isSelected ? colorClasses[pkg.color as keyof typeof colorClasses] : "";
+
               return (
                 <div
                   key={pkg.id}
                   onClick={() => setSelectedId(pkg.id)}
                   className={`
-                    px-4 py-3 rounded-lg cursor-pointer transition-all text-sm
+                    px-4 py-3 rounded-xl cursor-pointer transition-all border
                     ${isSelected
-                      ? "bg-blue-50 text-blue-700 font-semibold shadow-sm"
-                      : "text-gray-700 hover:bg-gray-50"}
+                      ? `${bgClass} border-2 shadow-sm`
+                      : "border-gray-200 hover:border-blue-300 hover:shadow-sm bg-white"}
                   `}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-xl">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-2xl">
                         {pkg.emoji}
                       </div>
                       <div>
-                        <div className="font-medium">{pkg.name}</div>
+                        <div className="font-semibold text-gray-900">{pkg.name}</div>
                         <div className="text-xs text-gray-500">
-                          a partir de {pkg.minPax} pax
+                          {pkg.capacity} pessoas
                         </div>
                       </div>
                     </div>
-                    <div className="text-right font-mono text-blue-700 font-medium">
-                      R${pkg.tiers[0]?.pricePerPax ?? "—"}
+                    <div className="text-right">
+                      <div className="font-bold font-mono text-blue-700">
+                        {pkg.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </div>
+                      {pkg.popular && (
+                        <div className="text-xs text-amber-600 font-medium">Mais vendido</div>
+                      )}
                     </div>
                   </div>
                 </div>
               );
             })}
-
-            {inactivePkgs.length > 0 && (
-              <>
-                <div className="h-px bg-gray-200 my-5 mx-4" />
-                <div className="text-xs font-bold text-gray-500 uppercase px-4 mb-2">
-                  Inativos
-                </div>
-                {inactivePkgs.map((pkg) => (
-                  <div
-                    key={pkg.id}
-                    onClick={() => setSelectedId(pkg.id)}
-                    className={`px-4 py-3 rounded-lg cursor-pointer text-sm opacity-70 hover:opacity-100 transition ${
-                      selectedId === pkg.id ? "bg-gray-100" : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-gray-200 flex items-center justify-center text-xl">
-                        {pkg.emoji}
-                      </div>
-                      <div className="font-medium text-gray-600">{pkg.name}</div>
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
           </div>
         </aside>
 
-        {/* Conteúdo principal */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-          <div className="max-w-5xl mx-auto space-y-6">
-            {/* Header do pacote */}
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between gap-6">
-              <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-4xl">
-                  {selected.emoji}
-                </div>
-                <div>
-                  <div className="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 mb-2">
-                    {selected.badge}
+        {/* Botão flutuante para mostrar sidebar quando oculta */}
+        {!showSidebar && (
+          <button
+            onClick={() => setShowSidebar(true)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-r-lg shadow-md p-2 hover:bg-gray-50 transition z-10"
+            title="Mostrar pacotes"
+          >
+            <ChevronRight size={16} />
+          </button>
+        )}
+
+        {/* Área central – Detalhes do Pacote */}
+        <div className={`flex-1 overflow-y-auto bg-gray-50 p-6 transition-all duration-300`}>
+          <div className="max-w-4xl mx-auto">
+            {/* Cabeçalho do pacote */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 shadow-sm">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-4xl">
+                    {selected.emoji}
                   </div>
-                  <h1 className="text-2xl font-bold text-gray-900">{selected.name}</h1>
-                  <p className="text-gray-600 mt-1.5 max-w-2xl">{selected.description}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 flex-shrink-0">
-                <button
-                  onClick={() => openModal(`Duplicar Pacote — ${selected.name}`, selected)}
-                  className="px-5 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium flex items-center gap-2"
-                >
-                  <Copy size={16} /> Duplicar
-                </button>
-                <button
-                  onClick={() => openModal(`Editar Pacote — ${selected.name}`, selected)}
-                  className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm text-sm font-medium flex items-center gap-2"
-                >
-                  <Edit size={16} /> Editar
-                </button>
-              </div>
-            </div>
-
-            {/* Simulador de Preço */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-              <div className="flex items-center gap-3 mb-5">
-                <DollarSign size={20} className="text-blue-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Simulador de Preço</h3>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Número de convidados
-                  </label>
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="range"
-                      min={selected.tiers[0]?.min ?? 30}
-                      max={selected.tiers.at(-1)?.max ?? 400}
-                      value={guestCount}
-                      onChange={(e) => setGuestCount(Number(e.target.value))}
-                      className="flex-1 accent-blue-600 h-2 rounded-full"
-                    />
-                    <span className="font-mono font-bold text-blue-700 min-w-[80px] text-right">
-                      {guestCount} pax
-                    </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-2xl font-bold text-gray-900">{selected.name}</h1>
+                      {selected.popular && (
+                        <span className="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">
+                          ★ Mais vendido
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-gray-600 mt-1 max-w-2xl">{selected.description}</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <div className="text-xs text-gray-500">Convidados</div>
-                    <div className="text-xl font-bold mt-1">{guestCount}</div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setModalPkg(selected);
+                      setModalOpen(true);
+                    }}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium flex items-center gap-2"
+                  >
+                    <Copy size={16} /> Duplicar
+                  </button>
+                  <button
+                    onClick={() => {
+                      setModalPkg(selected);
+                      setModalOpen(true);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm text-sm font-medium flex items-center gap-2"
+                  >
+                    <Edit size={16} /> Editar
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
+                <div className="text-center">
+                  <div className="text-sm text-gray-500">Capacidade</div>
+                  <div className="text-xl font-bold text-gray-900">{selected.capacity} pessoas</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-gray-500">Valor total</div>
+                  <div className="text-2xl font-bold text-blue-700">
+                    {selected.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <div className="text-xs text-gray-500">Preço/pax</div>
-                    <div className="text-xl font-bold text-blue-700 mt-1">
-                      {fmtBRL(pricePerPax)}
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-200">
-                    <div className="text-xs text-blue-700 font-medium">Total</div>
-                    <div className="text-2xl font-bold text-blue-800 mt-1">
-                      {fmtBRL(total)}
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <div className="text-xs text-gray-500">Margem est.</div>
-                    <div className="text-xl font-bold text-emerald-700 mt-1">
-                      {margin}%
-                    </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-gray-500">Valor por pessoa</div>
+                  <div className="text-xl font-bold text-gray-900">
+                    {Math.round(selected.price / (selected.capacityMax || 100)).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Itens Incluídos */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b bg-gray-50 flex items-center justify-between">
-                <h3 className="font-semibold text-gray-900">Itens Incluídos</h3>
-                <button className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1.5">
-                  <Plus size={16} /> Adicionar item
-                </button>
+            {/* Itens do Pacote */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-900">Itens Incluídos</h3>
+                <span className="text-xs text-gray-500">{selected.items.length} itens</span>
               </div>
               <div className="divide-y divide-gray-100">
-                {selected.items.map((item, i) => (
-                  <div
-                    key={i}
-                    className="px-6 py-4 flex items-center gap-5 hover:bg-gray-50 transition"
-                  >
-                    <div className="text-3xl w-10 flex-shrink-0">{item.emoji}</div>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">{item.name}</div>
-                      <div className="text-sm text-gray-600">{item.sub}</div>
-                    </div>
-                    <div className="font-mono text-sm text-gray-700 min-w-24 text-center">
-                      {item.qtyPer}
-                    </div>
-                    <div className="min-w-28 text-center">
-                      <span
-                        className={`px-3 py-1 text-xs font-medium rounded-full ${
-                          item.optional
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-emerald-100 text-emerald-800"
-                        }`}
+                {selected.items.map((item, i) => {
+                  const isExpanded = expandedItems === `${selected.id}-${i}`;
+                  return (
+                    <div key={i}>
+                      <div
+                        className="px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition cursor-pointer"
+                        onClick={() => setExpandedItems(isExpanded ? null : `${selected.id}-${i}`)}
                       >
-                        {item.optional ? "Opcional" : "Incluso"}
-                      </span>
+                        <div className="text-3xl w-12 flex-shrink-0">{item.emoji}</div>
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{item.name}</div>
+                          <div className="text-sm text-gray-600">{item.description}</div>
+                        </div>
+                        <div className="font-mono text-sm text-gray-700 min-w-28 text-right">
+                          {item.quantity}
+                        </div>
+                        <button className="p-1 hover:bg-gray-100 rounded-lg text-gray-500">
+                          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        </button>
+                      </div>
+                      {isExpanded && (
+                        <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
+                          <div className="text-xs text-gray-500">
+                            Detalhes adicionais do item podem ser configurados aqui.
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="font-mono text-sm text-gray-700 min-w-32 text-right">
-                      {fmtBRL(item.costPer100)}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
-        </main>
+        </div>
 
-        {/* Aside direita – Comparativo + Resumo */}
-        <aside className="w-96 border-l border-gray-200 bg-white flex flex-col overflow-y-auto">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900">Comparativo</h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Diferenças entre os principais pacotes
-            </p>
+        {/* Botão flutuante para mostrar details panel quando oculto */}
+        {!showDetailsPanel && (
+          <button
+            onClick={() => setShowDetailsPanel(true)}
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-l-lg shadow-md p-2 hover:bg-gray-50 transition z-10"
+            title="Mostrar detalhes"
+          >
+            <ChevronLeft size={16} />
+          </button>
+        )}
+
+        {/* Painel lateral - Resumo (sem comparativo) */}
+        <aside className={`border-l border-gray-200 bg-white flex flex-col overflow-hidden transition-all duration-300 ${showDetailsPanel ? "w-80" : "w-0"}`}>
+          <div className="p-6 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
+            <h3 className="text-lg font-bold text-gray-900">Resumo</h3>
+            <p className="text-sm text-gray-500 mt-1">Informações do pacote selecionado</p>
           </div>
 
-          <div className="p-6 space-y-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 font-medium">Feature</th>
-                    <th className="text-center py-3 font-medium text-blue-700">Essencial</th>
-                    <th className="text-center py-3 font-medium text-blue-700">Premium Infantil</th>
-                    <th className="text-center py-3 font-medium text-purple-700">Luxo Completo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ["Salgados", "5 un/pax", "8 un/pax", "10 un/pax"],
-                    ["Doces", "3 un/pax", "5 un/pax", "8 un/pax"],
-                    ["Bebidas", "✓", "✓", "Open bar"],
-                    ["Bolo incluso", "—", "✓", "✓"],
-                    ["Buffet quente", "—", "—", "✓"],
-                    ["Decoração", "—", "Básica", "Temática"],
-                    ["Equipe", "Básica", "Completa", "Completa + garçons"],
-                  ].map(([feature, ess, prem, luxo], i) => (
-                    <tr key={i} className="border-b last:border-b-0">
-                      <td className="py-3">{feature}</td>
-                      <td className="text-center">{ess}</td>
-                      <td className="text-center font-medium">{prem}</td>
-                      <td className="text-center font-medium">{luxo}</td>
-                    </tr>
-                  ))}
-                  <tr>
-                    <td className="py-3 font-medium">Preço base</td>
-                    <td className="text-center font-bold">R$38</td>
-                    <td className="text-center font-bold text-blue-700">R$60</td>
-                    <td className="text-center font-bold text-purple-700">R$95</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-4">Resumo atual</h4>
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Valores</h4>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span>Preço por pessoa:</span>
-                  <span className="font-medium text-blue-700">{fmtBRL(pricePerPax)}</span>
+                  <span className="text-gray-600">Valor total</span>
+                  <span className="font-bold text-blue-700">
+                    {selected.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Total ({guestCount} pax):</span>
-                  <span className="font-bold text-blue-800">{fmtBRL(total)}</span>
+                  <span className="text-gray-600">Preço por pessoa</span>
+                  <span className="font-medium">
+                    {Math.round(selected.price / (selected.capacityMax || 100)).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Margem estimada:</span>
-                  <span className="font-bold text-emerald-700">{margin}%</span>
+                  <span className="text-gray-600">Capacidade</span>
+                  <span className="font-medium">{selected.capacity} pessoas</span>
                 </div>
               </div>
             </div>
+
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Resumo de Itens</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Total de itens</span>
+                  <span className="font-medium">{selected.items.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Categorias</span>
+                  <span className="font-medium">Salgados, Doces, Bebidas, Serviços</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Dica */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 text-blue-800 mb-2">
+                <AlertCircle size={14} />
+                <span className="text-xs font-semibold">Dica</span>
+              </div>
+              <p className="text-xs text-blue-700">
+                Personalize este pacote adicionando ou removendo itens conforme a necessidade do cliente.
+              </p>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 bg-gray-50 p-4">
+            <button className="w-full px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-sm flex items-center justify-center gap-2">
+              <Edit size={16} /> Personalizar Pacote
+            </button>
           </div>
         </aside>
       </div>
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-5 flex items-center justify-between z-10">
-              <h2 className="text-2xl font-bold text-gray-900">{modalTitle}</h2>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-800 transition"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-8 space-y-10">
-              {/* Identificação */}
-              <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-4">Identificação</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nome do pacote *
-                    </label>
-                    <input
-                      defaultValue={modalPkg?.name ?? ""}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                      placeholder="Ex: Premium Infantil"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Classificação
-                    </label>
-                    <div className="flex flex-wrap gap-3">
-                      {["📋 Básico", "⭐ Popular", "◆ Premium", "🏢 Corp."].map((opt) => {
-                        const isActive = modalPkg?.badgeClass === opt.split(" ")[1]?.toLowerCase();
-                        return (
-                          <button
-                            key={opt}
-                            className={`px-5 py-2 rounded-lg border text-sm font-medium transition ${
-                              isActive
-                                ? "bg-blue-50 border-blue-500 text-blue-700"
-                                : "border-gray-300 hover:bg-gray-50"
-                            }`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Descrição
-                    </label>
-                    <textarea
-                      defaultValue={modalPkg?.description ?? ""}
-                      rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none"
-                      placeholder="Descreva o que está incluído…"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Itens do Pacote */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-semibold text-gray-700">Itens do Pacote</h4>
-                  <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1.5">
-                    <Plus size={16} /> Adicionar item
-                  </button>
-                </div>
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="grid grid-cols-[1fr_100px_100px_40px] bg-gray-50 border-b">
-                    <div className="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Item</div>
-                    <div className="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Qtd/pax</div>
-                    <div className="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Opcional?</div>
-                    <div></div>
-                  </div>
-                  {/* Linhas de exemplo – você pode tornar dinâmico */}
-                  {[
-                    { item: "Coxinha de Frango", qty: "8", optional: "Não" },
-                    { item: "Brigadeiro Gourmet", qty: "5", optional: "Não" },
-                  ].map((row, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_100px_100px_40px] border-b last:border-b-0">
-                      <div className="px-4 py-3">
-                        <select defaultValue={row.item} className="w-full bg-transparent">
-                          <option>Coxinha de Frango</option>
-                          <option>Empada</option>
-                          <option>Risole</option>
-                          <option>Brigadeiro</option>
-                          <option>Mini Cupcake</option>
-                          <option>Refrigerante 2L</option>
-                          <option>Bolo Personalizado</option>
-                        </select>
-                      </div>
-                      <div className="px-4 py-3">
-                        <input
-                          defaultValue={row.qty}
-                          className="w-full bg-transparent font-mono"
-                        />
-                      </div>
-                      <div className="px-4 py-3">
-                        <select defaultValue={row.optional} className="w-full bg-transparent">
-                          <option>Não</option>
-                          <option>Sim</option>
-                        </select>
-                      </div>
-                      <div className="px-4 py-3 flex items-center justify-center">
-                        <button className="text-red-500 hover:text-red-700">
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Faixas de Preço */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-semibold text-gray-700">Faixas de Preço</h4>
-                  <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1.5">
-                    <Plus size={16} /> Adicionar faixa
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { min: "50", max: "80", price: "60" },
-                    // Adicione mais dinamicamente se quiser
-                  ].map((tier, i) => (
-                    <div key={i} className="grid grid-cols-4 gap-4 items-end bg-gray-50 p-4 rounded-lg border">
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">De (pax)</label>
-                        <input
-                          defaultValue={tier.min}
-                          className="w-full px-3 py-2 border rounded-lg font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">Até (pax)</label>
-                        <input
-                          defaultValue={tier.max}
-                          className="w-full px-3 py-2 border rounded-lg font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">R$/pax</label>
-                        <input
-                          defaultValue={tier.price}
-                          className="w-full px-3 py-2 border rounded-lg font-mono"
-                        />
-                      </div>
-                      <button className="text-red-500 hover:text-red-700 self-end pb-2">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-8 border-t border-gray-200 flex justify-end gap-4">
-                <button
-                  onClick={() => setModalOpen(false)}
-                  className="px-6 py-3 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition"
-                >
-                  Cancelar
-                </button>
-                <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition">
-                  Salvar Pacote
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PackageModal
+          pkg={modalPkg}
+          onClose={() => setModalOpen(false)}
+        />
       )}
     </AppShell>
   );
+}
+
+
+function Save(props: any) {
+  return <Save {...props} />;
 }
